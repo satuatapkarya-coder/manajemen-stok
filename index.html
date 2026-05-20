@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Manajemen Stok</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1eb;
+    --surface: #ffffff;
+    --surface2: #f9f7f2;
+    --border: #e2ddd4;
+    --border-dark: #c8c2b6;
+    --text: #1a1714;
+    --text-muted: #6b6560;
+    --text-light: #9c9590;
+    --accent: #2b5f3f;
+    --accent-light: #e8f2ec;
+    --accent-mid: #4a8f64;
+    --red: #c0392b;
+    --red-light: #fdf0ef;
+    --amber: #c47a1e;
+    --amber-light: #fef6e8;
+    --blue: #1e5fa0;
+    --blue-light: #e8f0fa;
+    --purple: #6b3fa0;
+    --purple-light: #f3eef8;
+    --teal: #1a7a6e;
+    --teal-light: #e8f5f3;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 260px; height: 100vh;
+    background: var(--text);
+    padding: 0;
+    z-index: 100;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #ffffff; letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  .brand span { color: #6dba8a; }
+
+  .brand-sub {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    margin-top: 3px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+
+  .nav {
+    padding: 16px 12px;
+    flex: 1; overflow-y: auto;
+  }
+
+  .nav-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: rgba(255,255,255,0.3);
+    padding: 0 12px; margin: 16px 0 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s;
+    font-size: 13.5px; color: rgba(255,255,255,0.6);
+    font-weight: 500; border: none; background: none; width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: var(--accent-mid); color: #fff; }
+
+  .nav-icon {
+    width: 30px; height: 30px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .nav-item.active .nav-icon { background: rgba(255,255,255,0.2); }
+
+  .nav-badge {
+    margin-left: auto; background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px; min-width: 24px; text-align: center;
+  }
+
+  .nav-item.active .nav-badge { background: rgba(255,255,255,0.3); color: #fff; }
+
+  /* MAIN */
+  .main {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .page-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; }
+  .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .topbar-actions { display: flex; gap: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 16px; border-radius: var(--radius-sm);
+    font-size: 13.5px; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.15s; font-family: inherit;
+  }
+
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-mid); }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger:hover { background: #fad9d7; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--surface2); }
+
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 14px; margin-bottom: 28px;
+  }
+
+  .summary-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 18px;
+    cursor: pointer; transition: all 0.15s;
+  }
+
+  .summary-card:hover { border-color: var(--border-dark); box-shadow: var(--shadow); transform: translateY(-1px); }
+
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 12px;
+  }
+
+  .card-num { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; line-height: 1; }
+  .card-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+  .card-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  /* CATEGORY SECTION */
+  .cat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .cat-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .cat-badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* TABLE */
+  .table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 28px; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
+
+  th {
+    padding: 11px 16px; text-align: left;
+    font-size: 11.5px; font-weight: 700; color: var(--text-muted);
+    letter-spacing: 0.6px; text-transform: uppercase; white-space: nowrap;
+  }
+
+  td { padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  .td-name { font-weight: 600; color: var(--text); }
+  .td-unit { color: var(--text-muted); font-size: 12.5px; }
+  .td-stock { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; }
+  .td-info { font-size: 12px; color: var(--text-muted); }
+
+  .status-pill {
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; display: inline-block;
+  }
+
+  .status-ok { background: #e8f5ec; color: #2b7a47; }
+  .status-low { background: var(--amber-light); color: var(--amber); }
+  .status-empty { background: var(--red-light); color: var(--red); }
+
+  .btn-del {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--text-light); padding: 5px; border-radius: 6px;
+    font-size: 15px; transition: all 0.15s;
+  }
+
+  .btn-del:hover { color: var(--red); background: var(--red-light); }
+
+  .empty-row td { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+
+  /* MODAL */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 1000;
+    align-items: center; justify-content: center;
+  }
+
+  .modal-bg.open { display: flex; }
+
+  .modal {
+    background: var(--surface); border-radius: 16px;
+    width: 480px; max-width: 95vw;
+    box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+
+  .modal-head {
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; }
+
+  .modal-body { padding: 22px 24px; }
+
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.3px; }
+
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); font-family: inherit; font-size: 14px;
+    color: var(--text); background: var(--surface2); transition: border 0.15s;
+    outline: none;
+  }
+
+  input:focus, select:focus, textarea:focus { border-color: var(--accent-mid); background: #fff; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .modal-foot {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+
+  /* REKAP */
+  .rekap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+  .rekap-card {
+    background: var(--surface); border-radius: var(--radius);
+    border: 1px solid var(--border); overflow: hidden;
+  }
+
+  .rekap-head {
+    padding: 14px 18px; display: flex; align-items: center;
+    gap: 10px; border-bottom: 1px solid var(--border);
+  }
+
+  .rekap-icon { font-size: 20px; }
+  .rekap-title { font-size: 14px; font-weight: 700; }
+  .rekap-count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+  .rekap-body { padding: 12px 18px; }
+
+  .rekap-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+
+  .rekap-row:last-child { border-bottom: none; }
+  .rekap-row-name { color: var(--text); font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rekap-row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .rekap-row-qty { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; }
+  .rekap-row-unit { font-size: 11px; color: var(--text-muted); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--text); border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 24px; color: #fff;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+
+  .stat-item { text-align: center; padding: 0 16px; }
+  .stat-item + .stat-item { border-left: 1px solid rgba(255,255,255,0.12); }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex; gap: 10px; margin-bottom: 20px;
+  }
+
+  .search-input { flex: 1; position: relative; }
+  .search-input input { padding-left: 36px; }
+  .search-input::before {
+    content: "🔍"; position: absolute; left: 11px; top: 50%;
+    transform: translateY(-50%); font-size: 14px; pointer-events: none;
+  }
+
+  /* PRINT */
+  @media print {
+    .sidebar, .topbar, .btn, .btn-del, .modal-bg, .search-bar, .nav-item { display: none !important; }
+    .main { margin-left: 0; }
+    .content { padding: 0; }
+    .table-wrap { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--text); color: #fff; padding: 12px 20px;
+    border-radius: 10px; font-size: 14px; font-weight: 500;
+    transform: translateY(80px); opacity: 0;
+    transition: all 0.25s; z-index: 9999; pointer-events: none;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  .no-data {
+    text-align: center; padding: 40px; color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="brand">Stok<span>Manager</span></div>
+    <div class="brand-sub">Sistem Manajemen Stok</div>
+  </div>
+  <div class="nav">
+    <div class="nav-label">Menu</div>
+    <button class="nav-item active" onclick="showView('dashboard')">
+      <div class="nav-icon">📊</div> Dashboard
+    </button>
+    <button class="nav-item" onclick="showView('rekap')">
+      <div class="nav-icon">📋</div> Rekapitulasi
+    </button>
+
+    <div class="nav-label">Data Stok</div>
+    <button class="nav-item" onclick="showView('barang-jadi')" id="nav-barang-jadi">
+      <div class="nav-icon">📦</div> Barang Jadi
+      <span class="nav-badge" id="nbadge-barang-jadi">0</span>
+    </button>
+    <button class="nav-item" onclick="showView('bahan-baku')" id="nav-bahan-baku">
+      <div class="nav-icon">🪵</div> Bahan Baku
+      <span class="nav-badge" id="nbadge-bahan-baku">0</span>
+    </button>
+    <button class="nav-item" onclick="showView('aksesoris')" id="nav-aksesoris">
+      <div class="nav-icon">🔩</div> Aksesoris
+      <span class="nav-badge" id="nbadge-aksesoris">0</span>
+    </button>
+    <button class="nav-item" onclick="showView('kantor')" id="nav-kantor">
+      <div class="nav-icon">🖊️</div> Perlengkapan Kantor
+      <span class="nav-badge" id="nbadge-kantor">0</span>
+    </button>
+    <button class="nav-item" onclick="showView('bengkel')" id="nav-bengkel">
+      <div class="nav-icon">🔧</div> Peralatan Bengkel
+      <span class="nav-badge" id="nbadge-bengkel">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="page-sub">Ringkasan seluruh data stok</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="window.print()">🖨️ Cetak</button>
+      <button class="btn btn-primary" id="btn-tambah" onclick="openModal()" style="display:none">＋ Tambah Data</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-num" id="total-item">0</div>
+          <div class="stat-label">Total Item</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="total-kategori">5</div>
+          <div class="stat-label">Kategori</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="total-low" style="color:#ffb347">0</div>
+          <div class="stat-label">Stok Menipis</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="total-empty" style="color:#ff7070">0</div>
+          <div class="stat-label">Stok Habis</div>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card" onclick="showView('barang-jadi')">
+          <div class="card-icon" style="background:#e8f2ec; font-size:22px">📦</div>
+          <div class="card-num" id="dash-barang-jadi">0</div>
+          <div class="card-label">Barang Jadi</div>
+          <div class="card-sub">item terdaftar</div>
+        </div>
+        <div class="summary-card" onclick="showView('bahan-baku')">
+          <div class="card-icon" style="background:#fef6e8; font-size:22px">🪵</div>
+          <div class="card-num" id="dash-bahan-baku">0</div>
+          <div class="card-label">Bahan Baku</div>
+          <div class="card-sub">item terdaftar</div>
+        </div>
+        <div class="summary-card" onclick="showView('aksesoris')">
+          <div class="card-icon" style="background:#f3eef8; font-size:22px">🔩</div>
+          <div class="card-num" id="dash-aksesoris">0</div>
+          <div class="card-label">Aksesoris</div>
+          <div class="card-sub">item terdaftar</div>
+        </div>
+        <div class="summary-card" onclick="showView('kantor')">
+          <div class="card-icon" style="background:#e8f0fa; font-size:22px">🖊️</div>
+          <div class="card-num" id="dash-kantor">0</div>
+          <div class="card-label">Perlengkapan Kantor</div>
+          <div class="card-sub">item terdaftar</div>
+        </div>
+        <div class="summary-card" onclick="showView('bengkel')">
+          <div class="card-icon" style="background:#e8f5f3; font-size:22px">🔧</div>
+          <div class="card-num" id="dash-bengkel">0</div>
+          <div class="card-label">Peralatan Bengkel</div>
+          <div class="card-sub">item terdaftar</div>
+        </div>
+      </div>
+
+      <!-- RECENT CHANGES -->
+      <div class="cat-header">
+        <div class="cat-title">📝 Aktivitas Terbaru</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nama Item</th>
+              <th>Kategori</th>
+              <th>Stok</th>
+              <th>Satuan</th>
+              <th>Status</th>
+              <th>Tanggal Input</th>
+            </tr>
+          </thead>
+          <tbody id="recent-table">
+            <tr class="empty-row"><td colspan="7">Belum ada data. Mulai tambahkan stok di menu kategori.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REKAPITULASI -->
+    <div class="view" id="view-rekap">
+      <div class="rekap-grid" id="rekap-grid"></div>
+    </div>
+
+    <!-- CATEGORY VIEWS -->
+    <div class="view" id="view-barang-jadi">
+      <div class="search-bar">
+        <div class="search-input"><input type="text" placeholder="Cari item barang jadi..." oninput="filterTable('barang-jadi', this.value)"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nama Barang</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Lokasi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+          </thead>
+          <tbody id="table-barang-jadi"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-bahan-baku">
+      <div class="search-bar">
+        <div class="search-input"><input type="text" placeholder="Cari bahan baku..." oninput="filterTable('bahan-baku', this.value)"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nama Bahan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Supplier</th><th>Status</th><th>Tanggal</th><th></th></tr>
+          </thead>
+          <tbody id="table-bahan-baku"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-aksesoris">
+      <div class="search-bar">
+        <div class="search-input"><input type="text" placeholder="Cari aksesoris..." oninput="filterTable('aksesoris', this.value)"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nama Aksesoris</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Keterangan</th><th>Status</th><th>Tanggal</th><th></th></tr>
+          </thead>
+          <tbody id="table-aksesoris"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-kantor">
+      <div class="search-bar">
+        <div class="search-input"><input type="text" placeholder="Cari perlengkapan kantor..." oninput="filterTable('kantor', this.value)"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nama Item</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Lokasi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+          </thead>
+          <tbody id="table-kantor"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="view" id="view-bengkel">
+      <div class="search-bar">
+        <div class="search-input"><input type="text" placeholder="Cari peralatan bengkel..." oninput="filterTable('bengkel', this.value)"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nama Peralatan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Kondisi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+          </thead>
+          <tbody id="table-bengkel"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL TAMBAH -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">Tambah Data</div>
+      <button class="btn btn-ghost" onclick="closeModal()" style="padding:5px 10px">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>NAMA ITEM *</label>
+        <input type="text" id="f-nama" placeholder="Masukkan nama item">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>JUMLAH STOK *</label>
+          <input type="number" id="f-stok" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>SATUAN</label>
+          <select id="f-satuan">
+            <option>pcs</option>
+            <option>unit</option>
+            <option>set</option>
+            <option>kg</option>
+            <option>gram</option>
+            <option>liter</option>
+            <option>ml</option>
+            <option>meter</option>
+            <option>lembar</option>
+            <option>roll</option>
+            <option>box</option>
+            <option>lusin</option>
+            <option>rim</option>
+            <option>botol</option>
+            <option>pak</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>MINIMAL STOK (ALERT)</label>
+          <input type="number" id="f-min" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>SPESIFIKASI / TIPE</label>
+          <input type="text" id="f-spek" placeholder="Opsional">
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="f-extra-label">KETERANGAN / LOKASI</label>
+        <input type="text" id="f-extra" placeholder="Opsional">
+      </div>
+      <div class="form-group">
+        <label>CATATAN</label>
+        <textarea id="f-catatan" rows="2" placeholder="Opsional"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveItem()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {
+  'barang-jadi':  { label:'Barang Jadi',          icon:'📦', color:'#2b5f3f', bg:'#e8f2ec', extraLabel:'Lokasi Gudang' },
+  'bahan-baku':   { label:'Bahan Baku',            icon:'🪵', color:'#c47a1e', bg:'#fef6e8', extraLabel:'Supplier' },
+  'aksesoris':    { label:'Aksesoris',             icon:'🔩', color:'#6b3fa0', bg:'#f3eef8', extraLabel:'Keterangan' },
+  'kantor':       { label:'Perlengkapan Kantor',   icon:'🖊️', color:'#1e5fa0', bg:'#e8f0fa', extraLabel:'Lokasi / Ruangan' },
+  'bengkel':      { label:'Peralatan Bengkel',     icon:'🔧', color:'#1a7a6e', bg:'#e8f5f3', extraLabel:'Kondisi / Lokasi' },
+};
+
+let currentCat = null;
+let data = {};
+
+// LOAD
+Object.keys(CATS).forEach(k => {
+  try { data[k] = JSON.parse(localStorage.getItem('stok_' + k)) || []; }
+  catch(e) { data[k] = []; }
+});
+
+function save(cat) {
+  localStorage.setItem('stok_' + cat, JSON.stringify(data[cat]));
+}
+
+// SHOW VIEW
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('view-' + view).classList.add('active');
+  const navEl = document.getElementById('nav-' + view);
+  if (navEl) navEl.classList.add('active');
+
+  const titles = {
+    dashboard: ['Dashboard', 'Ringkasan seluruh data stok'],
+    rekap: ['Rekapitulasi Stok', 'Ringkasan otomatis semua kategori'],
+    'barang-jadi': ['Stok Barang Jadi', 'Data inventaris barang jadi'],
+    'bahan-baku': ['Stok Bahan Baku', 'Data inventaris bahan baku'],
+    aksesoris: ['Stok Aksesoris', 'Data inventaris aksesoris'],
+    kantor: ['Perlengkapan Kantor & Bengkel', 'Data inventaris perlengkapan kantor'],
+    bengkel: ['Peralatan Bengkel', 'Data inventaris peralatan bengkel'],
+  };
+
+  const t = titles[view] || [view, ''];
+  document.getElementById('page-title').textContent = t[0];
+  document.getElementById('page-sub').textContent = t[1];
+
+  const showBtn = CATS[view] !== undefined;
+  document.getElementById('btn-tambah').style.display = showBtn ? 'inline-flex' : 'none';
+
+  if (showBtn) {
+    currentCat = view;
+    renderTable(view);
+    document.getElementById('f-extra-label').textContent = CATS[view].extraLabel;
+  } else {
+    currentCat = null;
+  }
+
+  if (view === 'dashboard') renderDashboard();
+  if (view === 'rekap') renderRekap();
+}
+
+// STATUS
+function getStatus(stok, min) {
+  if (stok <= 0) return ['Habis', 'status-empty'];
+  if (min > 0 && stok <= min) return ['Menipis', 'status-low'];
+  return ['Tersedia', 'status-ok'];
+}
+
+// RENDER TABLE
+function renderTable(cat, filter = '') {
+  const tbody = document.getElementById('table-' + cat);
+  const items = data[cat].filter(i => !filter || i.nama.toLowerCase().includes(filter.toLowerCase()) || (i.spek||'').toLowerCase().includes(filter.toLowerCase()));
+  
+  if (!items.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${filter ? 'Tidak ditemukan hasil pencarian.' : 'Belum ada data. Klik "+ Tambah Data" untuk menambahkan.'}</td></tr>`;
+    return;
+  }
+  
+  tbody.innerHTML = items.map((item, idx) => {
+    const [stLabel, stClass] = getStatus(item.stok, item.min);
+    return `<tr>
+      <td class="td-info">${idx + 1}</td>
+      <td><div class="td-name">${item.nama}</div>${item.catatan ? `<div class="td-info">${item.catatan}</div>` : ''}</td>
+      <td class="td-unit">${item.spek || '—'}</td>
+      <td><span class="td-stock">${item.stok}</span></td>
+      <td class="td-unit">${item.satuan}</td>
+      <td class="td-info">${item.min || '—'}</td>
+      <td class="td-info">${item.extra || '—'}</td>
+      <td><span class="status-pill ${stClass}">${stLabel}</span></td>
+      <td class="td-info">${item.tanggal}</td>
+      <td><button class="btn-del" onclick="deleteItem('${cat}','${item.id}')" title="Hapus">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(cat, val) { renderTable(cat, val); }
+
+// DASHBOARD
+function renderDashboard() {
+  let totalItem = 0, totalLow = 0, totalEmpty = 0;
+  let recentAll = [];
+
+  Object.keys(CATS).forEach(cat => {
+    const items = data[cat];
+    totalItem += items.length;
+    document.getElementById('dash-' + cat).textContent = items.length;
+    document.getElementById('nbadge-' + cat).textContent = items.length;
+    items.forEach(i => {
+      const [sl] = getStatus(i.stok, i.min);
+      if (sl === 'Menipis') totalLow++;
+      if (sl === 'Habis') totalEmpty++;
+      recentAll.push({...i, cat});
+    });
+  });
+
+  document.getElementById('total-item').textContent = totalItem;
+  document.getElementById('total-low').textContent = totalLow;
+  document.getElementById('total-empty').textContent = totalEmpty;
+
+  recentAll.sort((a, b) => b.ts - a.ts);
+  const recent = recentAll.slice(0, 15);
+  const tbody = document.getElementById('recent-table');
+  
+  if (!recent.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Belum ada data. Mulai tambahkan stok di menu kategori.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = recent.map((item, idx) => {
+    const [stLabel, stClass] = getStatus(item.stok, item.min);
+    const catInfo = CATS[item.cat];
+    return `<tr>
+      <td class="td-info">${idx+1}</td>
+      <td class="td-name">${item.nama}</td>
+      <td><span style="font-size:12px; padding:3px 10px; border-radius:20px; background:${catInfo.bg}; color:${catInfo.color}; font-weight:600">${catInfo.icon} ${catInfo.label}</span></td>
+      <td><span class="td-stock">${item.stok}</span></td>
+      <td class="td-unit">${item.satuan}</td>
+      <td><span class="status-pill ${stClass}">${stLabel}</span></td>
+      <td class="td-info">${item.tanggal}</td>
+    </tr>`;
+  }).join('');
+}
+
+// REKAP
+function renderRekap() {
+  const grid = document.getElementById('rekap-grid');
+  grid.innerHTML = '';
+  
+  Object.keys(CATS).forEach(cat => {
+    const catInfo = CATS[cat];
+    const items = data[cat];
+    const card = document.createElement('div');
+    card.className = 'rekap-card';
+    
+    const available = items.filter(i => i.stok > 0).length;
+    const empty = items.filter(i => i.stok <= 0).length;
+    const low = items.filter(i => i.stok > 0 && i.min > 0 && i.stok <= i.min).length;
+
+    card.innerHTML = `
+      <div class="rekap-head" style="background:${catInfo.bg}">
+        <span class="rekap-icon">${catInfo.icon}</span>
+        <span class="rekap-title" style="color:${catInfo.color}">${catInfo.label}</span>
+        <span class="rekap-count">${items.length} item</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border-bottom:1px solid var(--border)">
+        <div style="text-align:center; padding:10px 8px; border-right:1px solid var(--border)">
+          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#2b7a47">${available}</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Tersedia</div>
+        </div>
+        <div style="text-align:center; padding:10px 8px; border-right:1px solid var(--border)">
+          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c47a1e">${low}</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Menipis</div>
+        </div>
+        <div style="text-align:center; padding:10px 8px">
+          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c0392b">${empty}</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Habis</div>
+        </div>
+      </div>
+      <div class="rekap-body">
+        ${items.length === 0 
+          ? '<div class="no-data" style="padding:20px">Belum ada data</div>' 
+          : items.map(i => {
+              const [sl, sc] = getStatus(i.stok, i.min);
+              return `<div class="rekap-row">
+                <span class="rekap-row-name" title="${i.nama}">${i.nama}</span>
+                <div class="rekap-row-right">
+                  <span class="rekap-row-qty">${i.stok}</span>
+                  <span class="rekap-row-unit">${i.satuan}</span>
+                  <span class="status-pill ${sc}" style="font-size:10px; padding:2px 7px">${sl}</span>
+                </div>
+              </div>`;
+            }).join('')
+        }
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// MODAL
+function openModal() {
+  if (!currentCat) return;
+  document.getElementById('modal-title').textContent = 'Tambah ' + CATS[currentCat].label;
+  document.getElementById('f-extra-label').textContent = CATS[currentCat].extraLabel;
+  ['f-nama','f-stok','f-min','f-spek','f-extra','f-catatan'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-satuan').value = 'pcs';
+  document.getElementById('modal-bg').classList.add('open');
+  setTimeout(() => document.getElementById('f-nama').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+}
+
+function saveItem() {
+  const nama = document.getElementById('f-nama').value.trim();
+  const stok = parseInt(document.getElementById('f-stok').value) || 0;
+  if (!nama) { showToast('Nama item tidak boleh kosong!'); return; }
+
+  const now = new Date();
+  const tanggal = now.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+
+  const item = {
+    id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+    nama,
+    stok,
+    satuan: document.getElementById('f-satuan').value,
+    min: parseInt(document.getElementById('f-min').value) || 0,
+    spek: document.getElementById('f-spek').value.trim(),
+    extra: document.getElementById('f-extra').value.trim(),
+    catatan: document.getElementById('f-catatan').value.trim(),
+    tanggal,
+    ts: Date.now(),
+  };
+
+  data[currentCat].unshift(item);
+  save(currentCat);
+  closeModal();
+  renderTable(currentCat);
+  updateBadge(currentCat);
+  showToast('✅ Data berhasil disimpan!');
+}
+
+function deleteItem(cat, id) {
+  if (!confirm('Hapus item ini?')) return;
+  data[cat] = data[cat].filter(i => i.id !== id);
+  save(cat);
+  renderTable(cat);
+  updateBadge(cat);
+  if (cat === currentCat) renderTable(cat);
+  showToast('🗑️ Data berhasil dihapus!');
+}
+
+function updateBadge(cat) {
+  document.getElementById('nbadge-' + cat).textContent = data[cat].length;
+  if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+}
+
+// TOAST
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// KEYBOARD
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-bg')) closeModal();
+});
+
+// INIT
+renderDashboard();
+Object.keys(CATS).forEach(cat => {
+  document.getElementById('nbadge-' + cat).textContent = data[cat].length;
+});
+</script>
+</body>
+</html>
