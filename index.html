@@ -181,6 +181,7 @@
     font-size: 12.5px; font-weight: 600; cursor: pointer;
     border: none; transition: all 0.15s; font-family: inherit;
     white-space: nowrap;
+    min-height: 40px;
   }
 
   .btn-primary { background: var(--accent); color: #fff; }
@@ -232,13 +233,8 @@
     display: flex; align-items: center; gap: 8px;
   }
 
-  .cat-badge {
-    font-size: 11px; font-weight: 600; padding: 3px 10px;
-    border-radius: 20px;
-  }
-
   /* TABLE */
-  .table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: auto; margin-bottom: 20px; }
+  .table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: auto; margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
 
   table { width: 100%; border-collapse: collapse; min-width: 600px; }
 
@@ -271,7 +267,7 @@
   .btn-del {
     background: transparent; border: none; cursor: pointer;
     color: var(--text-light); padding: 5px; border-radius: 6px;
-    font-size: 14px; transition: all 0.15s;
+    font-size: 14px; transition: all 0.15s; min-height: 30px; min-width: 30px;
   }
 
   .btn-del:hover { color: var(--red); background: var(--red-light); }
@@ -309,6 +305,7 @@
     padding: 18px; 
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .form-group { margin-bottom: 14px; }
@@ -316,7 +313,7 @@
 
   input, select, textarea {
     width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
-    border: 1px solid var(--border); font-family: inherit; font-size: 14px;
+    border: 1px solid var(--border); font-family: inherit; font-size: 16px;
     color: var(--text); background: var(--surface2); transition: border 0.15s;
     outline: none;
   }
@@ -348,7 +345,7 @@
   .rekap-title { font-size: 13px; font-weight: 700; }
   .rekap-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
-  .rekap-body { padding: 10px 14px; max-height: 300px; overflow-y: auto; }
+  .rekap-body { padding: 10px 14px; max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
   .rekap-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -459,8 +456,6 @@
 
     .table-wrap { 
       margin-bottom: 16px;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
     }
 
     table { min-width: 500px; }
@@ -504,7 +499,6 @@
     }
 
     .search-bar { gap: 6px; }
-    .search-input input { font-size: 14px; }
   }
 
   @media (max-width: 480px) {
@@ -559,7 +553,6 @@
     }
 
     .form-group { margin-bottom: 12px; }
-    input, select, textarea { font-size: 16px; }
 
     .btn { 
       padding: 8px 10px;
@@ -603,10 +596,10 @@
 </head>
 <body>
 
-<!-- SIDEBAR OVERLAY (Mobile) -->
+<!-- SIDEBAR OVERLAY -->
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-<!-- SIDEBAR TOGGLE (Mobile) -->
+<!-- SIDEBAR TOGGLE -->
 <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
 
 <!-- SIDEBAR -->
@@ -718,7 +711,6 @@
         </div>
       </div>
 
-      <!-- RECENT CHANGES -->
       <div class="cat-header">
         <div class="cat-title">📝 Aktivitas Terbaru</div>
       </div>
@@ -732,11 +724,11 @@
               <th>Stok</th>
               <th>Satuan</th>
               <th>Status</th>
-              <th>Tanggal Input</th>
+              <th>Tanggal</th>
             </tr>
           </thead>
           <tbody id="recent-table">
-            <tr class="empty-row"><td colspan="7">Belum ada data. Mulai tambahkan stok di menu kategori.</td></tr>
+            <tr class="empty-row"><td colspan="7">Belum ada data</td></tr>
           </tbody>
         </table>
       </div>
@@ -747,7 +739,7 @@
       <div class="rekap-grid" id="rekap-grid"></div>
     </div>
 
-    <!-- CATEGORY VIEWS -->
+    <!-- BARANG JADI -->
     <div class="view" id="view-barang-jadi">
       <div class="search-bar">
         <div class="search-input"><input type="text" placeholder="Cari item..." oninput="filterTable('barang-jadi', this.value)"></div>
@@ -755,27 +747,29 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Barang</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
+            <tr><th>#</th><th>Nama</th><th>Spek</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-barang-jadi"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- BAHAN BAKU -->
     <div class="view" id="view-bahan-baku">
       <div class="search-bar">
-        <div class="search-input"><input type="text" placeholder="Cari bahan baku..." oninput="filterTable('bahan-baku', this.value)"></div>
+        <div class="search-input"><input type="text" placeholder="Cari bahan..." oninput="filterTable('bahan-baku', this.value)"></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Bahan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Supplier</th><th>Status</th><th>Tgl</th><th></th></tr>
+            <tr><th>#</th><th>Nama</th><th>Spek</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Supplier</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-bahan-baku"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- AKSESORIS -->
     <div class="view" id="view-aksesoris">
       <div class="search-bar">
         <div class="search-input"><input type="text" placeholder="Cari aksesoris..." oninput="filterTable('aksesoris', this.value)"></div>
@@ -783,13 +777,14 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Aksesoris</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Keterangan</th><th>Status</th><th>Tgl</th><th></th></tr>
+            <tr><th>#</th><th>Nama</th><th>Spek</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Ket</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-aksesoris"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- KANTOR -->
     <div class="view" id="view-kantor">
       <div class="search-bar">
         <div class="search-input"><input type="text" placeholder="Cari item..." oninput="filterTable('kantor', this.value)"></div>
@@ -797,13 +792,14 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Item</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
+            <tr><th>#</th><th>Nama</th><th>Spek</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-kantor"></tbody>
         </table>
       </div>
     </div>
 
+    <!-- BENGKEL -->
     <div class="view" id="view-bengkel">
       <div class="search-bar">
         <div class="search-input"><input type="text" placeholder="Cari peralatan..." oninput="filterTable('bengkel', this.value)"></div>
@@ -811,7 +807,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Peralatan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Kondisi</th><th>Status</th><th>Tgl</th><th></th></tr>
+            <tr><th>#</th><th>Nama</th><th>Spek</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Kondisi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-bengkel"></tbody>
         </table>
@@ -821,7 +817,7 @@
   </div>
 </div>
 
-<!-- MODAL TAMBAH -->
+<!-- MODAL -->
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <div class="modal-head">
@@ -861,16 +857,16 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>MINIMAL STOK (ALERT)</label>
+          <label>MINIMAL STOK</label>
           <input type="number" id="f-min" placeholder="0" min="0">
         </div>
         <div class="form-group">
-          <label>SPESIFIKASI / TIPE</label>
+          <label>SPESIFIKASI</label>
           <input type="text" id="f-spek" placeholder="Opsional">
         </div>
       </div>
       <div class="form-group">
-        <label id="f-extra-label">KETERANGAN / LOKASI</label>
+        <label id="f-extra-label">LOKASI</label>
         <input type="text" id="f-extra" placeholder="Opsional">
       </div>
       <div class="form-group">
@@ -893,37 +889,49 @@ const CATS = {
   'barang-jadi':  { label:'Barang Jadi',          icon:'📦', color:'#2b5f3f', bg:'#e8f2ec', extraLabel:'Lokasi Gudang' },
   'bahan-baku':   { label:'Bahan Baku',            icon:'🪵', color:'#c47a1e', bg:'#fef6e8', extraLabel:'Supplier' },
   'aksesoris':    { label:'Aksesoris',             icon:'🔩', color:'#6b3fa0', bg:'#f3eef8', extraLabel:'Keterangan' },
-  'kantor':       { label:'Perlengkapan Kantor',   icon:'🖊️', color:'#1e5fa0', bg:'#e8f0fa', extraLabel:'Lokasi / Ruangan' },
-  'bengkel':      { label:'Peralatan Bengkel',     icon:'🔧', color:'#1a7a6e', bg:'#e8f5f3', extraLabel:'Kondisi / Lokasi' },
+  'kantor':       { label:'Perlengkapan Kantor',   icon:'🖊️', color:'#1e5fa0', bg:'#e8f0fa', extraLabel:'Lokasi' },
+  'bengkel':      { label:'Peralatan Bengkel',     icon:'🔧', color:'#1a7a6e', bg:'#e8f5f3', extraLabel:'Kondisi' },
 };
 
 let currentCat = null;
 let data = {};
 
-// LOAD
+// INIT DATA
 Object.keys(CATS).forEach(k => {
-  try { data[k] = JSON.parse(localStorage.getItem('stok_' + k)) || []; }
-  catch(e) { data[k] = []; }
+  try { 
+    const stored = localStorage.getItem('stok_' + k);
+    data[k] = stored ? JSON.parse(stored) : []; 
+  } catch(e) { 
+    data[k] = []; 
+  }
 });
 
 function save(cat) {
-  localStorage.setItem('stok_' + cat, JSON.stringify(data[cat]));
+  try {
+    localStorage.setItem('stok_' + cat, JSON.stringify(data[cat]));
+  } catch(e) {
+    console.error('Storage error:', e);
+  }
 }
 
 // MOBILE SIDEBAR
 function closeSidebarMobile() {
   if (window.innerWidth <= 768) {
-    document.getElementById('sidebar').classList.remove('mobile-open');
-    document.getElementById('sidebar-overlay').classList.remove('show');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('show');
   }
 }
 
-document.getElementById('sidebar-toggle').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('mobile-open');
-  document.getElementById('sidebar-overlay').classList.toggle('show');
+document.getElementById('sidebar-toggle').addEventListener('click', function() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('show');
 });
 
-document.getElementById('sidebar-overlay').addEventListener('click', () => {
+document.getElementById('sidebar-overlay').addEventListener('click', function() {
   closeSidebarMobile();
 });
 
@@ -932,7 +940,9 @@ function showView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-  document.getElementById('view-' + view).classList.add('active');
+  const viewEl = document.getElementById('view-' + view);
+  if (viewEl) viewEl.classList.add('active');
+
   const navEl = document.getElementById('nav-' + view);
   if (navEl) navEl.classList.add('active');
 
@@ -947,16 +957,20 @@ function showView(view) {
   };
 
   const t = titles[view] || [view, ''];
-  document.getElementById('page-title').textContent = t[0];
-  document.getElementById('page-sub').textContent = t[1];
+  const titleEl = document.getElementById('page-title');
+  const subEl = document.getElementById('page-sub');
+  if (titleEl) titleEl.textContent = t[0];
+  if (subEl) subEl.textContent = t[1];
 
   const showBtn = CATS[view] !== undefined;
-  document.getElementById('btn-tambah').style.display = showBtn ? 'inline-flex' : 'none';
+  const btn = document.getElementById('btn-tambah');
+  if (btn) btn.style.display = showBtn ? 'inline-flex' : 'none';
 
   if (showBtn) {
     currentCat = view;
     renderTable(view);
-    document.getElementById('f-extra-label').textContent = CATS[view].extraLabel;
+    const label = document.getElementById('f-extra-label');
+    if (label) label.textContent = CATS[view].extraLabel;
   } else {
     currentCat = null;
   }
@@ -965,20 +979,24 @@ function showView(view) {
   if (view === 'rekap') renderRekap();
 }
 
-// STATUS
 function getStatus(stok, min) {
   if (stok <= 0) return ['Habis', 'status-empty'];
   if (min > 0 && stok <= min) return ['Menipis', 'status-low'];
   return ['Tersedia', 'status-ok'];
 }
 
-// RENDER TABLE
 function renderTable(cat, filter = '') {
   const tbody = document.getElementById('table-' + cat);
-  const items = data[cat].filter(i => !filter || i.nama.toLowerCase().includes(filter.toLowerCase()) || (i.spek||'').toLowerCase().includes(filter.toLowerCase()));
+  if (!tbody) return;
+
+  const items = data[cat] ? data[cat].filter(i => 
+    !filter || 
+    i.nama.toLowerCase().includes(filter.toLowerCase()) || 
+    (i.spek || '').toLowerCase().includes(filter.toLowerCase())
+  ) : [];
   
   if (!items.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${filter ? 'Tidak ditemukan hasil pencarian.' : 'Belum ada data. Klik "+ Tambah" untuk menambahkan.'}</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${filter ? 'Tidak ditemukan' : 'Belum ada data'}</td></tr>`;
     return;
   }
   
@@ -986,7 +1004,7 @@ function renderTable(cat, filter = '') {
     const [stLabel, stClass] = getStatus(item.stok, item.min);
     return `<tr>
       <td class="td-info">${idx + 1}</td>
-      <td><div class="td-name">${item.nama}</div>${item.catatan ? `<div class="td-info">${item.catatan}</div>` : ''}</td>
+      <td><div class="td-name">${item.nama}</div></td>
       <td class="td-unit">${item.spek || '—'}</td>
       <td><span class="td-stock">${item.stok}</span></td>
       <td class="td-unit">${item.satuan}</td>
@@ -994,23 +1012,28 @@ function renderTable(cat, filter = '') {
       <td class="td-info">${item.extra || '—'}</td>
       <td><span class="status-pill ${stClass}">${stLabel}</span></td>
       <td class="td-info">${item.tanggal}</td>
-      <td><button class="btn-del" onclick="deleteItem('${cat}','${item.id}')" title="Hapus">🗑</button></td>
+      <td><button class="btn-del" onclick="deleteItem('${cat}','${item.id}')">🗑</button></td>
     </tr>`;
   }).join('');
 }
 
-function filterTable(cat, val) { renderTable(cat, val); }
+function filterTable(cat, val) { 
+  renderTable(cat, val); 
+}
 
-// DASHBOARD
 function renderDashboard() {
   let totalItem = 0, totalLow = 0, totalEmpty = 0;
   let recentAll = [];
 
   Object.keys(CATS).forEach(cat => {
-    const items = data[cat];
+    const items = data[cat] || [];
     totalItem += items.length;
-    document.getElementById('dash-' + cat).textContent = items.length;
-    document.getElementById('nbadge-' + cat).textContent = items.length;
+    
+    const dashEl = document.getElementById('dash-' + cat);
+    const badgeEl = document.getElementById('nbadge-' + cat);
+    if (dashEl) dashEl.textContent = items.length;
+    if (badgeEl) badgeEl.textContent = items.length;
+
     items.forEach(i => {
       const [sl] = getStatus(i.stok, i.min);
       if (sl === 'Menipis') totalLow++;
@@ -1019,42 +1042,47 @@ function renderDashboard() {
     });
   });
 
-  document.getElementById('total-item').textContent = totalItem;
-  document.getElementById('total-low').textContent = totalLow;
-  document.getElementById('total-empty').textContent = totalEmpty;
+  const totalItemEl = document.getElementById('total-item');
+  const totalLowEl = document.getElementById('total-low');
+  const totalEmptyEl = document.getElementById('total-empty');
+  if (totalItemEl) totalItemEl.textContent = totalItem;
+  if (totalLowEl) totalLowEl.textContent = totalLow;
+  if (totalEmptyEl) totalEmptyEl.textContent = totalEmpty;
 
-  recentAll.sort((a, b) => b.ts - a.ts);
+  recentAll.sort((a, b) => (b.ts || 0) - (a.ts || 0));
   const recent = recentAll.slice(0, 15);
   const tbody = document.getElementById('recent-table');
   
   if (!recent.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Belum ada data. Mulai tambahkan stok di menu kategori.</td></tr>';
+    if (tbody) tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Belum ada data</td></tr>';
     return;
   }
 
-  tbody.innerHTML = recent.map((item, idx) => {
-    const [stLabel, stClass] = getStatus(item.stok, item.min);
-    const catInfo = CATS[item.cat];
-    return `<tr>
-      <td class="td-info">${idx+1}</td>
-      <td class="td-name">${item.nama}</td>
-      <td><span style="font-size:10px; padding:2px 8px; border-radius:20px; background:${catInfo.bg}; color:${catInfo.color}; font-weight:600">${catInfo.icon} ${catInfo.label}</span></td>
-      <td><span class="td-stock">${item.stok}</span></td>
-      <td class="td-unit">${item.satuan}</td>
-      <td><span class="status-pill ${stClass}">${stLabel}</span></td>
-      <td class="td-info">${item.tanggal}</td>
-    </tr>`;
-  }).join('');
+  if (tbody) {
+    tbody.innerHTML = recent.map((item, idx) => {
+      const [stLabel, stClass] = getStatus(item.stok, item.min);
+      const catInfo = CATS[item.cat];
+      return `<tr>
+        <td class="td-info">${idx+1}</td>
+        <td class="td-name">${item.nama}</td>
+        <td><span style="font-size:10px; padding:2px 8px; border-radius:20px; background:${catInfo.bg}; color:${catInfo.color}; font-weight:600">${catInfo.icon}</span></td>
+        <td><span class="td-stock">${item.stok}</span></td>
+        <td class="td-unit">${item.satuan}</td>
+        <td><span class="status-pill ${stClass}">${stLabel}</span></td>
+        <td class="td-info">${item.tanggal}</td>
+      </tr>`;
+    }).join('');
+  }
 }
 
-// REKAP
 function renderRekap() {
   const grid = document.getElementById('rekap-grid');
+  if (!grid) return;
   grid.innerHTML = '';
   
   Object.keys(CATS).forEach(cat => {
     const catInfo = CATS[cat];
-    const items = data[cat];
+    const items = data[cat] || [];
     const card = document.createElement('div');
     card.className = 'rekap-card';
     
@@ -1066,7 +1094,7 @@ function renderRekap() {
       <div class="rekap-head" style="background:${catInfo.bg}">
         <span class="rekap-icon">${catInfo.icon}</span>
         <span class="rekap-title" style="color:${catInfo.color}">${catInfo.label}</span>
-        <span class="rekap-count">${items.length} item</span>
+        <span class="rekap-count">${items.length}</span>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border-bottom:1px solid var(--border)">
         <div style="text-align:center; padding:10px 8px; border-right:1px solid var(--border)">
@@ -1084,15 +1112,14 @@ function renderRekap() {
       </div>
       <div class="rekap-body">
         ${items.length === 0 
-          ? '<div class="no-data" style="padding:20px">Belum ada data</div>' 
-          : items.map(i => {
+          ? '<div class="no-data">Belum ada data</div>' 
+          : items.slice(0, 10).map(i => {
               const [sl, sc] = getStatus(i.stok, i.min);
               return `<div class="rekap-row">
-                <span class="rekap-row-name" title="${i.nama}">${i.nama}</span>
+                <span class="rekap-row-name">${i.nama}</span>
                 <div class="rekap-row-right">
                   <span class="rekap-row-qty">${i.stok}</span>
                   <span class="rekap-row-unit">${i.satuan}</span>
-                  <span class="status-pill ${sc}" style="font-size:9px; padding:2px 6px">${sl}</span>
                 </div>
               </div>`;
             }).join('')
@@ -1103,42 +1130,62 @@ function renderRekap() {
   });
 }
 
-// MODAL
 function openModal() {
   if (!currentCat) return;
-  document.getElementById('modal-title').textContent = 'Tambah ' + CATS[currentCat].label;
-  document.getElementById('f-extra-label').textContent = CATS[currentCat].extraLabel;
-  ['f-nama','f-stok','f-min','f-spek','f-extra','f-catatan'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-satuan').value = 'pcs';
-  document.getElementById('modal-bg').classList.add('open');
-  setTimeout(() => document.getElementById('f-nama').focus(), 100);
+  const modal = document.getElementById('modal-title');
+  if (modal) modal.textContent = 'Tambah ' + CATS[currentCat].label;
+  
+  const label = document.getElementById('f-extra-label');
+  if (label) label.textContent = CATS[currentCat].extraLabel;
+  
+  ['f-nama','f-stok','f-min','f-spek','f-extra','f-catatan'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  
+  const satuan = document.getElementById('f-satuan');
+  if (satuan) satuan.value = 'pcs';
+  
+  const modalBg = document.getElementById('modal-bg');
+  if (modalBg) modalBg.classList.add('open');
+  
+  setTimeout(() => {
+    const nama = document.getElementById('f-nama');
+    if (nama) nama.focus();
+  }, 100);
 }
 
 function closeModal() {
-  document.getElementById('modal-bg').classList.remove('open');
+  const modalBg = document.getElementById('modal-bg');
+  if (modalBg) modalBg.classList.remove('open');
 }
 
 function saveItem() {
-  const nama = document.getElementById('f-nama').value.trim();
-  const stok = parseInt(document.getElementById('f-stok').value) || 0;
-  if (!nama) { showToast('Nama item tidak boleh kosong!'); return; }
+  const nama = (document.getElementById('f-nama') || {}).value || '';
+  const stok = parseInt((document.getElementById('f-stok') || {}).value) || 0;
+  
+  if (!nama.trim()) { 
+    showToast('Nama item tidak boleh kosong!'); 
+    return; 
+  }
 
   const now = new Date();
   const tanggal = now.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
 
   const item = {
     id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
-    nama,
+    nama: nama.trim(),
     stok,
-    satuan: document.getElementById('f-satuan').value,
-    min: parseInt(document.getElementById('f-min').value) || 0,
-    spek: document.getElementById('f-spek').value.trim(),
-    extra: document.getElementById('f-extra').value.trim(),
-    catatan: document.getElementById('f-catatan').value.trim(),
+    satuan: (document.getElementById('f-satuan') || {}).value || 'pcs',
+    min: parseInt((document.getElementById('f-min') || {}).value) || 0,
+    spek: ((document.getElementById('f-spek') || {}).value || '').trim(),
+    extra: ((document.getElementById('f-extra') || {}).value || '').trim(),
+    catatan: ((document.getElementById('f-catatan') || {}).value || '').trim(),
     tanggal,
     ts: Date.now(),
   };
 
+  if (!data[currentCat]) data[currentCat] = [];
   data[currentCat].unshift(item);
   save(currentCat);
   closeModal();
@@ -1149,49 +1196,54 @@ function saveItem() {
 
 function deleteItem(cat, id) {
   if (!confirm('Hapus item ini?')) return;
+  if (!data[cat]) data[cat] = [];
   data[cat] = data[cat].filter(i => i.id !== id);
   save(cat);
   renderTable(cat);
   updateBadge(cat);
-  if (cat === currentCat) renderTable(cat);
   showToast('🗑️ Data berhasil dihapus!');
 }
 
 function updateBadge(cat) {
-  document.getElementById('nbadge-' + cat).textContent = data[cat].length;
-  if (document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+  const badge = document.getElementById('nbadge-' + cat);
+  if (badge) badge.textContent = (data[cat] || []).length;
+  const dashboard = document.getElementById('view-dashboard');
+  if (dashboard && dashboard.classList.contains('active')) renderDashboard();
 }
 
-// TOAST
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// KEYBOARD
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeModal();
 });
 
-document.getElementById('modal-bg').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal-bg')) closeModal();
+document.getElementById('modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
 });
 
 // INIT
 renderDashboard();
 Object.keys(CATS).forEach(cat => {
-  document.getElementById('nbadge-' + cat).textContent = data[cat].length;
+  const badge = document.getElementById('nbadge-' + cat);
+  if (badge) badge.textContent = (data[cat] || []).length;
 });
 
-// Show toggle button on mobile
 function checkMobileView() {
+  const toggle = document.getElementById('sidebar-toggle');
   if (window.innerWidth <= 768) {
-    document.getElementById('sidebar-toggle').classList.add('show');
+    if (toggle) toggle.classList.add('show');
   } else {
-    document.getElementById('sidebar-toggle').classList.remove('show');
-    document.getElementById('sidebar').classList.remove('mobile-open');
-    document.getElementById('sidebar-overlay').classList.remove('show');
+    if (toggle) toggle.classList.remove('show');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('show');
   }
 }
 
