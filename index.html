@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Sistem Manajemen Stok</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -52,7 +52,41 @@
     z-index: 100;
     display: flex; flex-direction: column;
     overflow: hidden;
+    transition: transform 0.3s ease;
   }
+
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 105;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-toggle.show { display: flex; }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+  }
+
+  .sidebar-overlay.show { display: block; }
 
   .sidebar-header {
     padding: 28px 24px 20px;
@@ -122,21 +156,31 @@
 
   .topbar {
     background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 0 32px; height: 64px;
+    padding: 12px 16px; min-height: 64px;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 50;
+    gap: 10px;
   }
 
-  .page-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; }
-  .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
 
-  .topbar-actions { display: flex; gap: 10px; }
+  .page-title { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; white-space: nowrap; }
+  .page-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; display: none; }
+
+  .topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
   .btn {
     display: inline-flex; align-items: center; gap: 7px;
-    padding: 9px 16px; border-radius: var(--radius-sm);
-    font-size: 13.5px; font-weight: 600; cursor: pointer;
+    padding: 9px 14px; border-radius: var(--radius-sm);
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
     border: none; transition: all 0.15s; font-family: inherit;
+    white-space: nowrap;
   }
 
   .btn-primary { background: var(--accent); color: #fff; }
@@ -146,7 +190,7 @@
   .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
   .btn-ghost:hover { background: var(--surface2); }
 
-  .content { padding: 28px 32px; flex: 1; }
+  .content { padding: 16px; flex: 1; }
 
   /* VIEWS */
   .view { display: none; }
@@ -154,38 +198,38 @@
 
   /* SUMMARY CARDS */
   .summary-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr);
-    gap: 14px; margin-bottom: 28px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 20px;
   }
 
   .summary-card {
     background: var(--surface); border-radius: var(--radius);
-    border: 1px solid var(--border); padding: 18px;
+    border: 1px solid var(--border); padding: 14px;
     cursor: pointer; transition: all 0.15s;
   }
 
   .summary-card:hover { border-color: var(--border-dark); box-shadow: var(--shadow); transform: translateY(-1px); }
 
   .card-icon {
-    width: 40px; height: 40px; border-radius: 10px;
+    width: 36px; height: 36px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px; margin-bottom: 12px;
+    font-size: 18px; margin-bottom: 10px;
   }
 
-  .card-num { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; line-height: 1; }
-  .card-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-  .card-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .card-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; line-height: 1; }
+  .card-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+  .card-sub { font-size: 10px; color: var(--text-light); margin-top: 2px; }
 
   /* CATEGORY SECTION */
   .cat-header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .cat-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 16px; font-weight: 700;
-    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
   }
 
   .cat-badge {
@@ -194,29 +238,29 @@
   }
 
   /* TABLE */
-  .table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; margin-bottom: 28px; }
+  .table-wrap { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: auto; margin-bottom: 20px; }
 
-  table { width: 100%; border-collapse: collapse; }
+  table { width: 100%; border-collapse: collapse; min-width: 600px; }
 
   thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
 
   th {
-    padding: 11px 16px; text-align: left;
-    font-size: 11.5px; font-weight: 700; color: var(--text-muted);
+    padding: 10px 12px; text-align: left;
+    font-size: 10px; font-weight: 700; color: var(--text-muted);
     letter-spacing: 0.6px; text-transform: uppercase; white-space: nowrap;
   }
 
-  td { padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  td { padding: 10px 12px; font-size: 12.5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--surface2); }
 
   .td-name { font-weight: 600; color: var(--text); }
-  .td-unit { color: var(--text-muted); font-size: 12.5px; }
-  .td-stock { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; }
-  .td-info { font-size: 12px; color: var(--text-muted); }
+  .td-unit { color: var(--text-muted); font-size: 11px; }
+  .td-stock { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; }
+  .td-info { font-size: 11px; color: var(--text-muted); }
 
   .status-pill {
-    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    font-size: 10px; font-weight: 600; padding: 3px 8px;
     border-radius: 20px; display: inline-block;
   }
 
@@ -227,12 +271,12 @@
   .btn-del {
     background: transparent; border: none; cursor: pointer;
     color: var(--text-light); padding: 5px; border-radius: 6px;
-    font-size: 15px; transition: all 0.15s;
+    font-size: 14px; transition: all 0.15s;
   }
 
   .btn-del:hover { color: var(--red); background: var(--red-light); }
 
-  .empty-row td { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+  .empty-row td { text-align: center; padding: 30px 12px; color: var(--text-muted); font-size: 13px; }
 
   /* MODAL */
   .modal-bg {
@@ -245,22 +289,30 @@
 
   .modal {
     background: var(--surface); border-radius: 16px;
-    width: 480px; max-width: 95vw;
+    width: 95vw; max-width: 480px;
+    max-height: 95vh;
     box-shadow: var(--shadow-lg); overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .modal-head {
-    padding: 20px 24px 18px;
+    padding: 16px 18px 14px;
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
   }
 
-  .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 17px; font-weight: 700; }
+  .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; }
 
-  .modal-body { padding: 22px 24px; }
+  .modal-body { 
+    padding: 18px; 
+    flex: 1;
+    overflow-y: auto;
+  }
 
-  .form-group { margin-bottom: 16px; }
-  label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.3px; }
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 0.3px; }
 
   input, select, textarea {
     width: 100%; padding: 10px 12px; border-radius: var(--radius-sm);
@@ -271,15 +323,16 @@
 
   input:focus, select:focus, textarea:focus { border-color: var(--accent-mid); background: #fff; }
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .modal-foot {
-    padding: 16px 24px; border-top: 1px solid var(--border);
-    display: flex; gap: 10px; justify-content: flex-end;
+    padding: 12px 18px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px; justify-content: flex-end;
+    flex-shrink: 0;
   }
 
   /* REKAP */
-  .rekap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .rekap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
 
   .rekap-card {
     background: var(--surface); border-radius: var(--radius);
@@ -287,55 +340,55 @@
   }
 
   .rekap-head {
-    padding: 14px 18px; display: flex; align-items: center;
+    padding: 12px 14px; display: flex; align-items: center;
     gap: 10px; border-bottom: 1px solid var(--border);
   }
 
-  .rekap-icon { font-size: 20px; }
-  .rekap-title { font-size: 14px; font-weight: 700; }
-  .rekap-count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+  .rekap-icon { font-size: 18px; }
+  .rekap-title { font-size: 13px; font-weight: 700; }
+  .rekap-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--text-muted); }
 
-  .rekap-body { padding: 12px 18px; }
+  .rekap-body { padding: 10px 14px; max-height: 300px; overflow-y: auto; }
 
   .rekap-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px;
   }
 
   .rekap-row:last-child { border-bottom: none; }
   .rekap-row-name { color: var(--text); font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .rekap-row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .rekap-row-qty { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; }
-  .rekap-row-unit { font-size: 11px; color: var(--text-muted); }
+  .rekap-row-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .rekap-row-qty { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; }
+  .rekap-row-unit { font-size: 10px; color: var(--text-muted); }
 
   /* STATS BAR */
   .stats-bar {
     background: var(--text); border-radius: var(--radius);
-    padding: 20px 24px; margin-bottom: 24px; color: #fff;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 16px 12px; margin-bottom: 18px; color: #fff;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 0;
   }
 
-  .stat-item { text-align: center; padding: 0 16px; }
+  .stat-item { text-align: center; padding: 0 12px; }
   .stat-item + .stat-item { border-left: 1px solid rgba(255,255,255,0.12); }
-  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; }
-  .stat-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
   /* SEARCH */
   .search-bar {
-    display: flex; gap: 10px; margin-bottom: 20px;
+    display: flex; gap: 8px; margin-bottom: 16px;
   }
 
   .search-input { flex: 1; position: relative; }
-  .search-input input { padding-left: 36px; }
+  .search-input input { padding-left: 32px; }
   .search-input::before {
-    content: "🔍"; position: absolute; left: 11px; top: 50%;
-    transform: translateY(-50%); font-size: 14px; pointer-events: none;
+    content: "🔍"; position: absolute; left: 10px; top: 50%;
+    transform: translateY(-50%); font-size: 13px; pointer-events: none;
   }
 
   /* PRINT */
   @media print {
-    .sidebar, .topbar, .btn, .btn-del, .modal-bg, .search-bar, .nav-item { display: none !important; }
+    .sidebar, .topbar, .btn, .btn-del, .modal-bg, .search-bar, .nav-item, .sidebar-toggle, .sidebar-overlay { display: none !important; }
     .main { margin-left: 0; }
     .content { padding: 0; }
     .table-wrap { box-shadow: none; border: 1px solid #ccc; }
@@ -343,9 +396,9 @@
 
   /* TOAST */
   .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--text); color: #fff; padding: 12px 20px;
-    border-radius: 10px; font-size: 14px; font-weight: 500;
+    position: fixed; bottom: 24px; right: 16px;
+    background: var(--text); color: #fff; padding: 12px 16px;
+    border-radius: 10px; font-size: 13px; font-weight: 500;
     transform: translateY(80px); opacity: 0;
     transition: all 0.25s; z-index: 9999; pointer-events: none;
   }
@@ -353,51 +406,242 @@
   .toast.show { transform: translateY(0); opacity: 1; }
 
   .no-data {
-    text-align: center; padding: 40px; color: var(--text-muted);
-    font-size: 14px;
+    text-align: center; padding: 30px 12px; color: var(--text-muted);
+    font-size: 13px;
   }
 
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 4px; }
+
+  /* MOBILE RESPONSIVE */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 240px;
+      transform: translateX(-100%);
+    }
+
+    .sidebar-toggle.show { display: flex; }
+
+    .main {
+      margin-left: 0;
+    }
+
+    .topbar {
+      padding: 10px 12px;
+      height: auto;
+    }
+
+    .topbar-left {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-title { font-size: 16px; }
+    .page-sub { display: block; }
+
+    .topbar-actions { 
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .content { padding: 12px; }
+
+    .summary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card-num { font-size: 20px; }
+    .card-icon { width: 32px; height: 32px; font-size: 16px; }
+
+    .table-wrap { 
+      margin-bottom: 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table { min-width: 500px; }
+
+    th { padding: 8px 10px; font-size: 9px; }
+    td { padding: 8px 10px; font-size: 11px; }
+
+    .stats-bar {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      padding: 14px 10px;
+    }
+
+    .stat-item { padding: 0 8px; }
+    .stat-num { font-size: 20px; }
+    .stat-label { font-size: 10px; }
+
+    .modal {
+      width: 95vw;
+      max-height: 90vh;
+      border-radius: 12px;
+    }
+
+    .modal-head { padding: 14px 14px 12px; }
+    .modal-title { font-size: 15px; }
+    .modal-body { padding: 14px; }
+    .modal-foot { padding: 10px 14px; gap: 6px; }
+
+    .btn {
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .form-row { grid-template-columns: 1fr; }
+
+    .cat-title { font-size: 13px; }
+
+    .rekap-grid { 
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .search-bar { gap: 6px; }
+    .search-input input { font-size: 14px; }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar {
+      width: 220px;
+    }
+
+    .topbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .topbar-left {
+      width: 100%;
+    }
+
+    .topbar-actions {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .page-title { font-size: 14px; }
+    .page-sub { font-size: 11px; }
+
+    .content { padding: 10px; }
+
+    .summary-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .card-num { font-size: 18px; }
+    .card-label { font-size: 10px; }
+    .card-sub { font-size: 9px; }
+
+    .stats-bar {
+      grid-template-columns: 1fr 1fr;
+      padding: 12px 8px;
+    }
+
+    .stat-item { padding: 0 6px; }
+    .stat-num { font-size: 18px; }
+    .stat-label { font-size: 9px; }
+
+    .cat-title { font-size: 12px; gap: 6px; }
+
+    .modal-body {
+      padding: 12px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+    input, select, textarea { font-size: 16px; }
+
+    .btn { 
+      padding: 8px 10px;
+      font-size: 11px;
+    }
+
+    .btn-del { font-size: 13px; }
+
+    .td-name { font-size: 12px; }
+    .td-unit { font-size: 10px; }
+    .status-pill { font-size: 9px; padding: 2px 6px; }
+
+    .toast {
+      bottom: 16px;
+      right: 12px;
+      font-size: 12px;
+      padding: 10px 14px;
+    }
+
+    .rekap-row { font-size: 11px; padding: 4px 0; }
+  }
+
+  @media (max-width: 360px) {
+    .summary-grid {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .stats-bar {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .stat-item + .stat-item { border-left: none; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 8px; }
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
 </style>
 </head>
 <body>
 
+<!-- SIDEBAR OVERLAY (Mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- SIDEBAR TOGGLE (Mobile) -->
+<button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+
 <!-- SIDEBAR -->
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <div class="brand">Stok<span>Manager</span></div>
     <div class="brand-sub">Sistem Manajemen Stok</div>
   </div>
   <div class="nav">
     <div class="nav-label">Menu</div>
-    <button class="nav-item active" onclick="showView('dashboard')">
+    <button class="nav-item active" onclick="showView('dashboard'); closeSidebarMobile();">
       <div class="nav-icon">📊</div> Dashboard
     </button>
-    <button class="nav-item" onclick="showView('rekap')">
+    <button class="nav-item" onclick="showView('rekap'); closeSidebarMobile();">
       <div class="nav-icon">📋</div> Rekapitulasi
     </button>
 
     <div class="nav-label">Data Stok</div>
-    <button class="nav-item" onclick="showView('barang-jadi')" id="nav-barang-jadi">
+    <button class="nav-item" onclick="showView('barang-jadi'); closeSidebarMobile();" id="nav-barang-jadi">
       <div class="nav-icon">📦</div> Barang Jadi
       <span class="nav-badge" id="nbadge-barang-jadi">0</span>
     </button>
-    <button class="nav-item" onclick="showView('bahan-baku')" id="nav-bahan-baku">
+    <button class="nav-item" onclick="showView('bahan-baku'); closeSidebarMobile();" id="nav-bahan-baku">
       <div class="nav-icon">🪵</div> Bahan Baku
       <span class="nav-badge" id="nbadge-bahan-baku">0</span>
     </button>
-    <button class="nav-item" onclick="showView('aksesoris')" id="nav-aksesoris">
+    <button class="nav-item" onclick="showView('aksesoris'); closeSidebarMobile();" id="nav-aksesoris">
       <div class="nav-icon">🔩</div> Aksesoris
       <span class="nav-badge" id="nbadge-aksesoris">0</span>
     </button>
-    <button class="nav-item" onclick="showView('kantor')" id="nav-kantor">
+    <button class="nav-item" onclick="showView('kantor'); closeSidebarMobile();" id="nav-kantor">
       <div class="nav-icon">🖊️</div> Perlengkapan Kantor
       <span class="nav-badge" id="nbadge-kantor">0</span>
     </button>
-    <button class="nav-item" onclick="showView('bengkel')" id="nav-bengkel">
+    <button class="nav-item" onclick="showView('bengkel'); closeSidebarMobile();" id="nav-bengkel">
       <div class="nav-icon">🔧</div> Peralatan Bengkel
       <span class="nav-badge" id="nbadge-bengkel">0</span>
     </button>
@@ -408,13 +652,13 @@
 <div class="main">
   <!-- TOPBAR -->
   <div class="topbar">
-    <div>
+    <div class="topbar-left">
       <div class="page-title" id="page-title">Dashboard</div>
       <div class="page-sub" id="page-sub">Ringkasan seluruh data stok</div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-ghost" onclick="window.print()">🖨️ Cetak</button>
-      <button class="btn btn-primary" id="btn-tambah" onclick="openModal()" style="display:none">＋ Tambah Data</button>
+      <button class="btn btn-primary" id="btn-tambah" onclick="openModal()" style="display:none">＋ Tambah</button>
     </div>
   </div>
 
@@ -506,12 +750,12 @@
     <!-- CATEGORY VIEWS -->
     <div class="view" id="view-barang-jadi">
       <div class="search-bar">
-        <div class="search-input"><input type="text" placeholder="Cari item barang jadi..." oninput="filterTable('barang-jadi', this.value)"></div>
+        <div class="search-input"><input type="text" placeholder="Cari item..." oninput="filterTable('barang-jadi', this.value)"></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Barang</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Lokasi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+            <tr><th>#</th><th>Nama Barang</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-barang-jadi"></tbody>
         </table>
@@ -525,7 +769,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Bahan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Supplier</th><th>Status</th><th>Tanggal</th><th></th></tr>
+            <tr><th>#</th><th>Nama Bahan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Supplier</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-bahan-baku"></tbody>
         </table>
@@ -539,7 +783,7 @@
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Aksesoris</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Keterangan</th><th>Status</th><th>Tanggal</th><th></th></tr>
+            <tr><th>#</th><th>Nama Aksesoris</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Keterangan</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-aksesoris"></tbody>
         </table>
@@ -548,12 +792,12 @@
 
     <div class="view" id="view-kantor">
       <div class="search-bar">
-        <div class="search-input"><input type="text" placeholder="Cari perlengkapan kantor..." oninput="filterTable('kantor', this.value)"></div>
+        <div class="search-input"><input type="text" placeholder="Cari item..." oninput="filterTable('kantor', this.value)"></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Item</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Lokasi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+            <tr><th>#</th><th>Nama Item</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Lokasi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-kantor"></tbody>
         </table>
@@ -562,12 +806,12 @@
 
     <div class="view" id="view-bengkel">
       <div class="search-bar">
-        <div class="search-input"><input type="text" placeholder="Cari peralatan bengkel..." oninput="filterTable('bengkel', this.value)"></div>
+        <div class="search-input"><input type="text" placeholder="Cari peralatan..." oninput="filterTable('bengkel', this.value)"></div>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th>#</th><th>Nama Peralatan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min. Stok</th><th>Kondisi</th><th>Status</th><th>Tanggal</th><th></th></tr>
+            <tr><th>#</th><th>Nama Peralatan</th><th>Spesifikasi</th><th>Stok</th><th>Satuan</th><th>Min</th><th>Kondisi</th><th>Status</th><th>Tgl</th><th></th></tr>
           </thead>
           <tbody id="table-bengkel"></tbody>
         </table>
@@ -582,7 +826,7 @@
   <div class="modal">
     <div class="modal-head">
       <div class="modal-title" id="modal-title">Tambah Data</div>
-      <button class="btn btn-ghost" onclick="closeModal()" style="padding:5px 10px">✕</button>
+      <button class="btn btn-ghost" onclick="closeModal()" style="padding:5px 8px; font-size:16px">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -666,6 +910,23 @@ function save(cat) {
   localStorage.setItem('stok_' + cat, JSON.stringify(data[cat]));
 }
 
+// MOBILE SIDEBAR
+function closeSidebarMobile() {
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebar-overlay').classList.remove('show');
+  }
+}
+
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('sidebar-overlay').classList.toggle('show');
+});
+
+document.getElementById('sidebar-overlay').addEventListener('click', () => {
+  closeSidebarMobile();
+});
+
 // SHOW VIEW
 function showView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -681,7 +942,7 @@ function showView(view) {
     'barang-jadi': ['Stok Barang Jadi', 'Data inventaris barang jadi'],
     'bahan-baku': ['Stok Bahan Baku', 'Data inventaris bahan baku'],
     aksesoris: ['Stok Aksesoris', 'Data inventaris aksesoris'],
-    kantor: ['Perlengkapan Kantor & Bengkel', 'Data inventaris perlengkapan kantor'],
+    kantor: ['Perlengkapan Kantor', 'Data inventaris perlengkapan kantor'],
     bengkel: ['Peralatan Bengkel', 'Data inventaris peralatan bengkel'],
   };
 
@@ -717,7 +978,7 @@ function renderTable(cat, filter = '') {
   const items = data[cat].filter(i => !filter || i.nama.toLowerCase().includes(filter.toLowerCase()) || (i.spek||'').toLowerCase().includes(filter.toLowerCase()));
   
   if (!items.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${filter ? 'Tidak ditemukan hasil pencarian.' : 'Belum ada data. Klik "+ Tambah Data" untuk menambahkan.'}</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="10">${filter ? 'Tidak ditemukan hasil pencarian.' : 'Belum ada data. Klik "+ Tambah" untuk menambahkan.'}</td></tr>`;
     return;
   }
   
@@ -777,7 +1038,7 @@ function renderDashboard() {
     return `<tr>
       <td class="td-info">${idx+1}</td>
       <td class="td-name">${item.nama}</td>
-      <td><span style="font-size:12px; padding:3px 10px; border-radius:20px; background:${catInfo.bg}; color:${catInfo.color}; font-weight:600">${catInfo.icon} ${catInfo.label}</span></td>
+      <td><span style="font-size:10px; padding:2px 8px; border-radius:20px; background:${catInfo.bg}; color:${catInfo.color}; font-weight:600">${catInfo.icon} ${catInfo.label}</span></td>
       <td><span class="td-stock">${item.stok}</span></td>
       <td class="td-unit">${item.satuan}</td>
       <td><span class="status-pill ${stClass}">${stLabel}</span></td>
@@ -809,16 +1070,16 @@ function renderRekap() {
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border-bottom:1px solid var(--border)">
         <div style="text-align:center; padding:10px 8px; border-right:1px solid var(--border)">
-          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#2b7a47">${available}</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Tersedia</div>
+          <div style="font-size:18px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#2b7a47">${available}</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px">Tersedia</div>
         </div>
         <div style="text-align:center; padding:10px 8px; border-right:1px solid var(--border)">
-          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c47a1e">${low}</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Menipis</div>
+          <div style="font-size:18px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c47a1e">${low}</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px">Menipis</div>
         </div>
         <div style="text-align:center; padding:10px 8px">
-          <div style="font-size:20px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c0392b">${empty}</div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:2px">Habis</div>
+          <div style="font-size:18px; font-weight:700; font-family:'Space Grotesk',sans-serif; color:#c0392b">${empty}</div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:2px">Habis</div>
         </div>
       </div>
       <div class="rekap-body">
@@ -831,7 +1092,7 @@ function renderRekap() {
                 <div class="rekap-row-right">
                   <span class="rekap-row-qty">${i.stok}</span>
                   <span class="rekap-row-unit">${i.satuan}</span>
-                  <span class="status-pill ${sc}" style="font-size:10px; padding:2px 7px">${sl}</span>
+                  <span class="status-pill ${sc}" style="font-size:9px; padding:2px 6px">${sl}</span>
                 </div>
               </div>`;
             }).join('')
@@ -922,6 +1183,20 @@ renderDashboard();
 Object.keys(CATS).forEach(cat => {
   document.getElementById('nbadge-' + cat).textContent = data[cat].length;
 });
+
+// Show toggle button on mobile
+function checkMobileView() {
+  if (window.innerWidth <= 768) {
+    document.getElementById('sidebar-toggle').classList.add('show');
+  } else {
+    document.getElementById('sidebar-toggle').classList.remove('show');
+    document.getElementById('sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebar-overlay').classList.remove('show');
+  }
+}
+
+window.addEventListener('resize', checkMobileView);
+checkMobileView();
 </script>
 </body>
 </html>
